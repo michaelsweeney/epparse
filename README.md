@@ -1,4 +1,4 @@
-# epparse
+# epresults
 Python module for reading and visualization EnergyPlus SQL files for both tabular and time-series/hourly results.
 
 Sifting through EnergyPlus output files to find specific reports can be a daunting and time-intensive task. By querying the SQLite Output of a simulation, it becomes much simpler to quickly obtain Hourly, Timestep, and Tabular reports.
@@ -15,13 +15,13 @@ The SQLite file must be requested in the IDF file using the 'SimpleAndTabular' a
 
 'Output:SQLite, SimpleAndTabular;'
 
-Download or Clone from GitHub and place in a folder labeled 'epparse'
+Download or Clone from GitHub and place in a folder labeled 'epresults'
 ```
 import sys
-epparse_location = 'c:/epparse'
-sys.path.append(epparse_location)
+epresults_location = 'c:/epresults'
+sys.path.append(epresults_location)
 
-import epparse as ep
+import epresults as ep
 
 pathtosim = 'C:/simfiles/eplusout' # do not include extensions
 mysim = ep.load.epLoad(pathtosim)
@@ -57,7 +57,7 @@ mydf = mysim.sql.getseries(filtered) # units are 'IP' by default but can be spec
 
 ## Plotting Hourly Data:
 
-epparse includes a convenience module called 'dfplot', which provides access to Plotly Multiline, Scatter, Heatmap, Surface, and other plots. These can be used inside a Jupyter Notebook or any other interface that supports Plotly. To use this, call 'ep.dfplot.charttype()':
+epresults includes a convenience module called 'dfplot', which provides access to Plotly Multiline, Scatter, Heatmap, Surface, and other plots. These can be used inside a Jupyter Notebook or any other interface that supports Plotly. To use this, call 'ep.dfplot.charttype()':
 
 ```
 ep.dfplot.line(mydf)
@@ -65,13 +65,6 @@ ep.dfplot.heatmap(mydf, 1) # 1 is the column index
 ```
 
 There are a number of ways to customize these Plots; calling help(ep.dfplot.heatmap), for example, will show customizable options.
-
-
-
-
-
-
-
 
 
 
