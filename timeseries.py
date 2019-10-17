@@ -54,6 +54,7 @@ class SqlSeries:
     def _conv_units(self, df):
         bnd_node_dict = self._bnd_node_dict()
 
+
         convdict = {
                 'Air': {
                     'factor': {
@@ -81,7 +82,10 @@ class SqlSeries:
                         'kg': 2.2,
                         'm/s': 1.328084,
                         'W/m2': 10.7639,
-                        'Pa': 0.000145038
+                        'Pa': 0.000145038,
+                        'hr': 1,
+                        'ach': 1,
+                        '%': 1,
                         },
                     'units': {
                         'J': 'W',
@@ -94,7 +98,11 @@ class SqlSeries:
                         'deg': 'deg',
                         'm/s': 'ft/s',
                         'W/m2': 'W/ft2',
-                        'Pa': 'psi'
+                        'Pa': 'psi',
+                        'hr': 'hr',
+                        'ach': 'ach',
+                        '%': '%',
+                    
                         }
                 }
             }
@@ -111,7 +119,11 @@ class SqlSeries:
                 fconv = convdict[fname]['factor'][unit]
                 funit = convdict[fname]['units'][unit]
 
+                if fconv != '1.8x+32':
+                    df[col] = df[col].apply(lambda x: x * fconv)                
+
             except:
+
                 if unit in convdict['neutral']['units'].keys():
                     fname = 'neutral'
                     fconv = convdict['neutral']['factor'][unit]
@@ -140,19 +152,19 @@ class SqlSeries:
                     df[col] = df[col].apply(lambda x: (x * 1.8) + 32)
                     funit = 'F'
 
-                else:
-                    if fconv != '1.8x+32':
-                        df[col] = df[col].apply(lambda x: x * fconv)
-
-                unitlist.append(funit)
+                if fconv != '1.8x+32':
+                    df[col] = df[col].apply(lambda x: x * fconv)
+                    
+            unitlist.append(funit)
         
         convcols = [list(elem) for elem in df.columns]
-        
+
         newconvcols = []
         for num, conv in enumerate(convcols):
 
             newlist = conv[:-1] + [unitlist[num]]
             newconvcols.append(newlist)
+
         newconvcols = list(map(list, zip(*newconvcols)))
         idx = pd.MultiIndex.from_arrays(newconvcols)
         
