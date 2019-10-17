@@ -6,14 +6,14 @@ Sifting through EnergyPlus output files to find specific reports can be a daunti
 This module provides a Python api to achieve this goal and relies heavily on Pandas DataFrames as well as Plotly's Python api for visualization.
 
 
+
+
+# setup
 Note: In order to use this module, the 'eplusout.sql' and 'eplusout.bnd' files should be located in the same folder. The bnd file is used mainly for converting SI volumetric flow rates to imperial units based on fluid type (water is gpm, air is cfm)
 
 The SQLite file must be requested in the IDF file using the 'SimpleAndTabular' argument:
 
 'Output:SQLite, SimpleAndTabular;'
-
-
-Usage Example: 
 
 Download or Clone from GitHub and place in a folder labeled 'epparse'
 
@@ -22,7 +22,6 @@ epparse_location = 'c:/epparse'
 sys.path.append(epparse_location)
 
 import epparse as ep
-
 
 pathtosim = 'C:/simfiles/eplusout' # do not include extensions
 mysim = ep.load.epLoad(pathtosim)
