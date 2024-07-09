@@ -54,7 +54,8 @@ class SqlSeries:
     def _conv_units(self, df):
         bnd_node_dict = self._bnd_node_dict()
 
-
+ 
+        
         convdict = {
                 'Air': {
                     'factor': {
@@ -219,7 +220,7 @@ class SqlSeries:
         timedf['Hour'] = timedf['Hour'].apply(lambda x: zeropad(x))
         timedf['dt'] =  timedf['Month'].astype(str) + "-" + timedf['Day'].astype(str)  + "-" + timedf['Hour'].astype(str)
         dtformat = "%m-%d-%H"
-        timedf['dt'] = pd.to_datetime(timedf['dt'], format=dtformat, errors='ignore')
+        timedf['dt'] = pd.to_datetime(timedf['dt'], format=dtformat)
         return timedf
 
 
@@ -265,23 +266,41 @@ class SqlSeries:
 
         listquery = 'SELECT "Value","ReportDataDictionaryIndex","TimeIndex" FROM "ReportData" WHERE "ReportDataDictionaryIndex" IN '+str(tuple(dfidx.ReportDataDictionaryIndex))
         df = self._df_query(listquery)
-
+        
         time = self._maketime()[['TimeIndex', 'dt']]
-
+        
         df = pd.merge(left = df, right = dfidx, on='ReportDataDictionaryIndex')
-        df = pd.pivot_table(df, columns=['IndexGroup', 'TimestepType', 'KeyValue', 'Name', 'Units'], index='TimeIndex')
-        df['TimeIndex'] = df.index
-        df = pd.merge(left = df.reset_index(drop=True), right = time, on='TimeIndex')
-        df.index = df['dt']
-        df = df.drop('dt', axis=1)
-        df = df.drop('TimeIndex', axis=1)
+        
 
+        df = pd.pivot_table(df, columns=['IndexGroup', 'TimestepType', 'KeyValue', 'Name', 'Units'], index='TimeIndex', values='Value')
+        
+
+        timedict = time.set_index('TimeIndex').to_dict()['dt']
+
+        df = df.reset_index()
+
+        df['dt'] = df.apply(lambda x: timedict[int(x['TimeIndex'].values[0])], axis=1)
+
+        df = df.set_index('dt', drop=True)
+
+        df = df.drop("TimeIndex", axis=1)
+   
+
+        
+        
+        
+ 
+        
         idx = pd.MultiIndex.from_tuples(list(df.columns))
+        
         df.columns = idx
+
+
         if units == 'ip':
             df = self._conv_units(df)
+        
+        return df
 
-        return df['Value']
             
 
 
